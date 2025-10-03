@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 20
-  productGUID: 00000000000000000000000000000000
+  productGUID: 2f149f7f08cac4b04bdc3c32b707d654
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -877,7 +877,7 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   cloudProjectId: df4d5cbd-451f-4c64-9824-0abaa13e46d2
   framebufferDepthMemorylessMode: 0
-  projectName: HorrorHouse
+  projectName: GrimJack
   organizationId: spiderassassin
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
