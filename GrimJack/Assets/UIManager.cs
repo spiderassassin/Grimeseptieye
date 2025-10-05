@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            print("OUT");
+            //print("OUT");
             if (vignette.intensity.value >= 0f)
             {
                 vignette.intensity.value -= overlay_speed * Time.deltaTime;

@@ -18,5 +18,9 @@ public class CircleOfDeath : MonoBehaviour
     {
         PlayerController.Instance.inCircleofDeath = false;
     }
-    
+    private void OnDestroy()
+    {
+        PlayerController.Instance.inCircleofDeath = false;
+    }
+
 }
