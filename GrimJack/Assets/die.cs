@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class die : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class die : MonoBehaviour
         if (final)
         {
             Destroy(parent);
+            SceneManager.LoadScene(3);
         }
         else
         {
