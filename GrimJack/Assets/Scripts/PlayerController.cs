@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
     float turnSmoothVelocity;
     public float health = 100f;
+    public bool inCircleofDeath = false;
+
     // Start is called before the first frame update
     void Awake()
     {
