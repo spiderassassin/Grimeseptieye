@@ -7,6 +7,12 @@ public class EnemyBehavior : MonoBehaviour
     public enum MotionMode { Straight, ZigZag, CircleSpiral, CrissCross, Rando }
     public MotionMode motion = MotionMode.Straight;
 
+    public Animator animator;
+
+    public bool isDamaged = false;
+    public bool isDead = false;
+    float damage_duation = 2f;
+
     public CapsuleCollider circle;
     public float speed = 3f;
 
@@ -44,40 +50,57 @@ public class EnemyBehavior : MonoBehaviour
 
     void FixedUpdate()
     {
-        // get world-space center / radius of the circle
-        Vector3 center = circle.transform.TransformPoint(circle.center);
-
-        float maxScale = circle.transform.lossyScale.x; // they're all scaled the same anyway - lossyscale because its inconsistent
-        float radius = circle.radius * maxScale;
-
-        // time (in seconds) between steps
-        float dt = Time.fixedDeltaTime;
-
-        UpdateDirectionByMode(center, dt);
-
-        Vector3 pos = rb.position;
-
-        // propose next position
-        Vector3 step = dirXZ * speed * dt;
-        Vector3 nextPos = pos + step;
-        // if we'd go outside the circle, correct the direction and snap to the edge
-        Vector3 toNext = nextPos - center;
-        float distXZ = new Vector2(toNext.x, toNext.z).magnitude;
-
-        if (distXZ > radius)
+        if(isDead == false)
         {
-            // function that determines whatever its supposed to do
-            dirXZ = (center - pos);
-            dirXZ.y = 0f;
-            dirXZ.Normalize();
-        }
+            if (damage_duation < 2f)
+            {
+                damage_duation += Time.deltaTime;
+            }
+            else
+            {
+                if (isDamaged == true)
+                {
+                    isDamaged = false;
+                    animator.SetBool("hurt", false);
+                }
+            }
+            // get world-space center / radius of the circle
+            Vector3 center = circle.transform.TransformPoint(circle.center);
 
-        transform.position = nextPos;
-        // face direction of movement
-        if (faceMovement)
-        {
-            transform.forward = new Vector3(dirXZ.x, 0f, dirXZ.z);
+            float maxScale = circle.transform.lossyScale.x; // they're all scaled the same anyway - lossyscale because its inconsistent
+            float radius = circle.radius * maxScale;
+
+            // time (in seconds) between steps
+            float dt = Time.fixedDeltaTime;
+
+            UpdateDirectionByMode(center, dt);
+
+            Vector3 pos = rb.position;
+
+            // propose next position
+            Vector3 step = dirXZ * speed * dt;
+            Vector3 nextPos = pos + step;
+            // if we'd go outside the circle, correct the direction and snap to the edge
+            Vector3 toNext = nextPos - center;
+            float distXZ = new Vector2(toNext.x, toNext.z).magnitude;
+
+            if (distXZ > radius)
+            {
+                // function that determines whatever its supposed to do
+                dirXZ = (center - pos);
+                dirXZ.y = 0f;
+                dirXZ.Normalize();
+            }
+
+            transform.position = nextPos;
+            // face direction of movement
+            if (faceMovement)
+            {
+                transform.forward = new Vector3(dirXZ.x, 0f, dirXZ.z);
+            }
         }
+        
+        
     }
 
     private void UpdateDirectionByMode(Vector3 center, float dt)
@@ -111,19 +134,25 @@ public class EnemyBehavior : MonoBehaviour
         HP -= amount;
         if (HP <= 0f)
         {
+            
             Die();
         }
         else
         {
+            isDamaged = true;
+            damage_duation = 0f;
+            animator.SetBool("hurt", true);
             // play hit sound or something?
         }
     }
 
     private void Die()
     {
+        animator.SetBool("die", true);
+        isDead = true;
         // insert death noises
         // kill kill kill kill
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7782512292348603807}
   - component: {fileID: 7782512292348603806}
   - component: {fileID: 7782512292348603805}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,6 +94,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8700617353114198275, guid: d5042f03b106c2940a3680dfaf47529d,
         type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -8700617353114198275, guid: d5042f03b106c2940a3680dfaf47529d,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -167,10 +172,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8391222552659086748, guid: d5042f03b106c2940a3680dfaf47529d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: -1853094968961178454, guid: d5042f03b106c2940a3680dfaf47529d,
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 65702495048144492, guid: d5042f03b106c2940a3680dfaf47529d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 65702495048144492, guid: d5042f03b106c2940a3680dfaf47529d,
         type: 3}
@@ -181,6 +196,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: captain_flatass
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d5042f03b106c2940a3680dfaf47529d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5042f03b106c2940a3680dfaf47529d, type: 3}
