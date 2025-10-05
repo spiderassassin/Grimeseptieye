@@ -25,25 +25,35 @@ public class PlayerController : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        if (vertical < 0)
+
+        // Player only moves forward (no backward)
+        bool isMovingForward = vertical > 0;
+
+        // Rotate player based on horizontal input
+        if (Mathf.Abs(horizontal) > 0.1f)
         {
-            vertical = 0;
+            float rotationSpeed = 120f; // adjust as needed
+            transform.Rotate(Vector3.up, horizontal * rotationSpeed * Time.deltaTime);
         }
-        Vector3 direction = new Vector3(horizontal, 0f, vertical);
-        if(direction.magnitude >= 0.1f)
+
+        if (isMovingForward)
         {
             animator.SetBool("isWalking", true);
-            float targetAngle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.5f);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+
+            // Move forward relative to the camera's facing direction
+            Vector3 camForward = cam.forward;
+            camForward.y = 0f; // ignore camera tilt
+            camForward.Normalize();
+
+            Vector3 moveDir = camForward;
+            controller.Move(moveDir * speed * Time.deltaTime);
         }
         else
         {
             animator.SetBool("isWalking", false);
         }
 
+        // Attack input
         if (Input.GetKeyDown(KeyCode.Space))
         {
             animator.SetBool("isAttacking", true);
@@ -53,6 +63,7 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isAttacking", false);
         }
     }
+
 
 
     public void Damage()
