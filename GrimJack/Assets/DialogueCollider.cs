@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class room1 : MonoBehaviour
+public class DialogueCollider : MonoBehaviour
 {
     public DialogueTrigger trigger;
 
