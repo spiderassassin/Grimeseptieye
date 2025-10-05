@@ -13,9 +13,15 @@ public class PlayerController : MonoBehaviour
     float turnSmoothVelocity;
     public float health = 100f;
     public bool inCircleofDeath = false;
+
     public bool isAttacking = false;
     public float attackTimer = 0;
     public LayerMask enemyLayerMask;
+    public AudioSource footsteps;
+    public AudioSource axeswing;
+    public AudioSource axeslash;
+    public bool FootStepsPlaying = false;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -25,14 +31,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (attackTimer < 1)
-        {
-            attackTimer += Time.deltaTime;
-        }
-        if(attackTimer >= 1)
-        {
-            isAttacking = false;
-        }
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -50,6 +48,12 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("isWalking", true);
 
+            if (FootStepsPlaying == false)
+            {
+                footsteps.Play();
+                FootStepsPlaying = true;
+            }
+
             // Move forward relative to the camera's facing direction
             Vector3 camForward = cam.forward;
             camForward.y = 0f; // ignore camera tilt
@@ -61,6 +65,8 @@ public class PlayerController : MonoBehaviour
         else
         {
             animator.SetBool("isWalking", false);
+            FootStepsPlaying = false;
+            footsteps.Stop();
         }
 
         // Attack input
@@ -75,20 +81,17 @@ public class PlayerController : MonoBehaviour
     }
 
 
+
+
+
     public void Attack()
     {
         isAttacking = true;
         attackTimer = 0f;
-        //print("hi?");
-        /*Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-        Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
-        if(Physics.Raycast(ray, out RaycastHit raycastHit, 50f, enemyLayerMask))
-        {
-            print("eeeee");
-            raycastHit.collider.transform.gameObject.GetComponent<EnemyBehavior>().TakeDamage(30f);
-            print("HIT!");
-        }*/
+        axeswing.Play();
+
     }
+
     public void Damage()
     {
         health = health - 10 * Time.deltaTime;
