@@ -5415,10 +5415,8 @@ MonoBehaviour:
   dialogue:
     name: 
     sentences:
-    - "What drugs are they on, moving erratically around the room like that? Their
-      nasal passage must be destroyed\u2026 Another example of humans abusing their
-      bodies for momentary reward, only to become a slave to their addictions. Pathetic.
-      Nevertheless I require an olfactory system so this person will have to do."
+    - "How I long for a sweet and savoury taste\u2026 Humans stuff their face with
+      food that leads to an early demise, doing this daily without regret. Unnatural."
 --- !u!65 &1471573546
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6438,7 +6436,9 @@ MonoBehaviour:
   dialogue:
     name: 
     sentences:
-    - "How I long for a sweet and savoury taste\u2026"
+    - "What drugs are they on, moving erratically around the room like that? Their
+      nasal passage must be destroyed\u2026 Another example of humans abusing their
+      bodies for momentary reward, only to become a slave to their addictions. Pathetic."
 --- !u!65 &1810788790
 BoxCollider:
   m_ObjectHideFlags: 0
