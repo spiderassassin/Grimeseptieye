@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour
 {
-    public enum MotionMode { Straight, ZigZag, CircleSpiral, CrissCross, Rando }
+    public enum MotionMode { Straight, ZigZag, CircleSpiral, CrissCross, Rando, CrackCocaine }
     public MotionMode motion = MotionMode.Straight;
 
     public Animator animator;
@@ -18,7 +19,7 @@ public class EnemyBehavior : MonoBehaviour
 
     public Vector3 initialDirectionXZ = new Vector3(1, 0, 0);
     public bool faceMovement = true;
-    public Rigidbody rb;  
+    public Rigidbody rb;
 
     public float HP = 100f;
 
@@ -35,9 +36,23 @@ public class EnemyBehavior : MonoBehaviour
 
 
     // circle-spiral stuff
-
+    public float spiralAmount = 0.5f;      // strength of in/out push (0..1ish)
+    public float spiralSwitchTime = 1.2f;  // seconds between flipping in <-> out
+    private float spiralTimer = 0f;
+    private int spiralSign = +1;           // +1 = inward, -1 = outward
 
     // ultimate random stuff
+    public float targetReachDistance = 0.3f;   // how close is "arrived"
+    public float edgeBuffer = 0.2f;            // don't pick targets right on the rim
+    private Vector3 randomTarget;              // current random destination
+    private bool hasRandomTarget = false;
+
+
+    // crackCOCIANE BRO
+    public float circleTurnRate = 30f;     // degrees per second (positive = CCW)
+
+    // cached world-space radius for use inside UpdateDirectionByMode (replaces GetWorldRadius)
+    private float worldRadius;
 
 
 
@@ -50,7 +65,7 @@ public class EnemyBehavior : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(isDead == false)
+        if (isDead == false)
         {
             if (damage_duation < 2f)
             {
@@ -69,13 +84,21 @@ public class EnemyBehavior : MonoBehaviour
 
             float maxScale = circle.transform.lossyScale.x; // they're all scaled the same anyway - lossyscale because its inconsistent
             float radius = circle.radius * maxScale;
+            worldRadius = radius; // cache for modes that need radius inside UpdateDirectionByMode
 
             // time (in seconds) between steps
             float dt = Time.fixedDeltaTime;
 
+            if (motion == MotionMode.Rando && !hasRandomTarget)
+            {
+                float y = transform.position.y;
+                randomTarget = PickRandomTarget(center, radius, y);
+                hasRandomTarget = true;
+            }
+
             UpdateDirectionByMode(center, dt);
 
-            Vector3 pos = rb.position;
+            Vector3 pos = rb ? rb.position : transform.position;
 
             // propose next position
             Vector3 step = dirXZ * speed * dt;
@@ -99,8 +122,8 @@ public class EnemyBehavior : MonoBehaviour
                 transform.forward = new Vector3(dirXZ.x, 0f, dirXZ.z);
             }
         }
-        
-        
+
+
     }
 
     private void UpdateDirectionByMode(Vector3 center, float dt)
@@ -126,6 +149,81 @@ public class EnemyBehavior : MonoBehaviour
 
                 break;
 
+
+
+
+            case MotionMode.CircleSpiral:
+                // time-keeping for simple flip-flop in/out
+                spiralTimer += dt;
+                if (spiralTimer >= spiralSwitchTime)
+                {
+                    spiralSign = -spiralSign;
+                    spiralTimer = 0f;
+                }
+
+                // radial (inward) and tangent (perpendicular anti) from our current position
+                Vector3 toCenter = center - transform.position;
+                toCenter.y = 0f;
+                if (toCenter.sqrMagnitude < 1e-6f) toCenter = -dirXZ; // fallback
+
+                Vector3 radial = toCenter.normalized;         // inward
+                Vector3 tangent = new Vector3(-radial.z, 0f, radial.x); // 90° anti
+
+                // mostly tangent (orbit) + fixed inward/outward push that flips sign
+                dirXZ = (tangent + radial * (spiralAmount * spiralSign));
+                dirXZ.y = 0f;
+                dirXZ.Normalize();
+                break;
+
+
+
+            case MotionMode.CrackCocaine:
+                // Build a tangent direction around the circle at our current position
+                toCenter = center - transform.position;
+                toCenter.y = 0f;
+                if (toCenter.sqrMagnitude < 1e-6f) toCenter = -dirXZ; // fallback
+
+                radial = toCenter.normalized;                 // points inward
+                tangent = RotateXZ(radial, +90f);             // anti tangent
+
+                // Turn direction along the tangent at circleTurnRate
+                RotateVectorTowards(ref tangent, circleTurnRate * dt);
+
+                // Combine: tangent + a bit of in/out
+                dirXZ = (tangent + radial);
+                dirXZ.y = 0f;
+                dirXZ.Normalize();
+                break;
+
+
+
+
+            case MotionMode.Rando:
+                {
+                    // If no target yet (or was cleared), pick one
+                    if (!hasRandomTarget)
+                    {
+                        randomTarget = PickRandomTarget(center, worldRadius, transform.position.y);
+                        hasRandomTarget = true;
+                    }
+
+                    // Head toward the target
+                    Vector3 toTarget = randomTarget - transform.position;
+                    toTarget.y = 0f;
+
+                    // If we arrived (or target is degenerate), pick a new one
+                    if (toTarget.sqrMagnitude < targetReachDistance * targetReachDistance || toTarget.sqrMagnitude < 1e-6f)
+                    {
+                        randomTarget = PickRandomTarget(center, worldRadius, transform.position.y);
+                        toTarget = randomTarget - transform.position;
+                        toTarget.y = 0f;
+                    }
+
+                    dirXZ = toTarget.normalized;
+                    break;
+                }
+
+
         }
     }
 
@@ -134,7 +232,7 @@ public class EnemyBehavior : MonoBehaviour
         HP -= amount;
         if (HP <= 0f)
         {
-            
+
             Die();
         }
         else
@@ -164,5 +262,17 @@ public class EnemyBehavior : MonoBehaviour
         return (Quaternion.Euler(0f, degrees, 0f) * v).normalized;
     }
 
-}
+    private void RotateVectorTowards(ref Vector3 v, float degrees)
+    {
+        v = RotateXZ(v, degrees);
+    }
 
+    private Vector3 PickRandomTarget(Vector3 center, float radius, float y)
+    {
+        // Random.insideUnitCircle -> point in unit disk; scale by (radius - edgeBuffer)
+        Vector2 p = Random.insideUnitCircle * Mathf.Max(0f, radius - edgeBuffer);
+        return new Vector3(center.x + p.x, y, center.z + p.y);
+    }
+
+
+}

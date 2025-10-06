@@ -3774,6 +3774,11 @@ PrefabInstance:
       propertyPath: circle
       value: 
       objectReference: {fileID: 355651967}
+    - target: {fileID: 6914286362800487739, guid: 367f290d3576b4a298999f05a1201b38,
+        type: 3}
+      propertyPath: motion
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6914286362800487741, guid: 367f290d3576b4a298999f05a1201b38,
         type: 3}
       propertyPath: m_Name
