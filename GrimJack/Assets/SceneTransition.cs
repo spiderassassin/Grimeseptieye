@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransition : MonoBehaviour
 {
+    public AudioSource playbutton; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,8 +19,23 @@ public class SceneTransition : MonoBehaviour
         
     }
 
-    public void Play()
+    public IEnumerator Play()
     {
+        playbutton.Play();
+
+        yield return new WaitForSeconds(3);
+        
+
         SceneManager.LoadScene(1);
+
+
     }
+
+    public void waiter()
+    {
+        StartCoroutine(Play()); 
+
+    }
+
+
 }
