@@ -9,6 +9,8 @@ public class EnemyBehavior : MonoBehaviour
     public MotionMode motion = MotionMode.Straight;
 
     public Animator animator;
+    public AudioSource scream;
+    public AudioSource impact;
 
     public bool isDamaged = false;
     public bool isDead = false;
@@ -67,17 +69,15 @@ public class EnemyBehavior : MonoBehaviour
     {
         if (isDead == false)
         {
-            if (damage_duation < 2f)
+            if (isDamaged == true && (damage_duation < 1f))
             {
                 damage_duation += Time.deltaTime;
             }
             else
             {
-                if (isDamaged == true)
-                {
-                    isDamaged = false;
-                    animator.SetBool("hurt", false);
-                }
+                isDamaged = false;
+                animator.SetBool("hurt", false);
+              
             }
             // get world-space center / radius of the circle
             Vector3 center = circle.transform.TransformPoint(circle.center);
@@ -230,6 +230,7 @@ public class EnemyBehavior : MonoBehaviour
     public void TakeDamage(float amount)
     {
         HP -= amount;
+        impact.Play();
         if (HP <= 0f)
         {
 
@@ -247,6 +248,7 @@ public class EnemyBehavior : MonoBehaviour
     private void Die()
     {
         animator.SetBool("die", true);
+        scream.Play();
         isDead = true;
         // insert death noises
         // kill kill kill kill

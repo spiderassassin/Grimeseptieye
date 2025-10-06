@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public AudioSource dmg;
+    bool dmgplaying = false;
     public static PlayerController Instance;
     public CharacterController controller;
     public Transform cam;
@@ -94,6 +96,10 @@ public class PlayerController : MonoBehaviour
 
     public void Damage()
     {
+        if(dmg.isPlaying == false)
+        {
+            dmg.Play();
+        }
         health = health - 10 * Time.deltaTime;
         if (health <= 0)
         {

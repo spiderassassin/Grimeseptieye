@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class die : MonoBehaviour
 {
     public bool final;
+    public bool guitar = false;
+    public GameObject bgmusic;
     public GameObject nextdialogue;
     public GameObject parent;
     // Start is called before the first frame update
@@ -22,6 +24,10 @@ public class die : MonoBehaviour
 
     public void dienow()
     {
+        if (guitar)
+        {
+            bgmusic.SetActive(true);
+        }
         if (final)
         {
             Destroy(parent);
